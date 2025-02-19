@@ -1,0 +1,60 @@
+plugins {
+    id 'com.android.library' // 用于构建 Android 库
+    id 'maven-publish'
+}
+
+android {
+    namespace 'cloud.deepblue.mqttfix' // 设置库的命名空间
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 24 // 设置最低支持的 SDK 版本
+        consumerProguardFiles "consumer-rules.pro" // 添加 consumer Proguard 配置
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false // 关闭代码混淆
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' // 添加 Proguard 配置
+        }
+        debug {
+            minifyEnabled false // 关闭代码混淆
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' // 添加 Proguard 配置
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+
+
+
+dependencies {
+    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5" // MQTT 客户端依赖
+    implementation 'androidx.work:work-runtime:2.7.1' // WorkManager 依赖
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0' // LocalBroadcastManager 依赖
+}
+
+afterEvaluate {
+    tasks.whenTaskAdded { task ->
+        if (task.name == 'publishReleasePublicationToMavenLocal') {
+            task.dependsOn 'bundleReleaseAar'  // 确保发布任务依赖于构建 AAR 的任务
+        }
+    }
+
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.findByName('release')
+                groupId = 'com.github.QingHeYang'
+                artifactId = 'MqttFix'
+                version = '1.0.2'
+                artifact("$buildDir/outputs/aar/mqttfix-release.aar")
+            }
+
+        }
+    }
+}
