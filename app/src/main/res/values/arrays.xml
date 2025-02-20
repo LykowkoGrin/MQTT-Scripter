@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string-array name="protocol_options">
+        <item>TCP</item>
+        <item>TCP-SSL</item>
+        <item>Websocket</item>
+        <item>Websocket-SSL</item>
+    </string-array>
+</resources>

@@ -8,7 +8,7 @@
     android:background="@drawable/rectangle_background">
 
     <!-- Изображение элемента -->
-    <ImageView
+    <ImageButton
         android:id="@+id/item_image"
         android:layout_width="64dp"
         android:layout_height="64dp"

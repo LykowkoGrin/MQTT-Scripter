@@ -6,6 +6,7 @@ import android.util.Log;
 import cloud.deepblue.mqttfix.mqtt.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
@@ -14,8 +15,6 @@ import java.util.UUID;
 public class MQTTManager {
 
     private static final String TAG = "MQTTManager";
-
-    private Context context;
 
     // Настройки подключения
     private String url;         // адрес сервера (без протокола и порта), например "broker.hivemq.com"
@@ -28,12 +27,6 @@ public class MQTTManager {
     // Клиент MQTT
     private MqttAndroidClient mqttClient;
 
-    /**
-     * Интерфейс слушателя успешного подключения.
-     */
-    public interface OnConnectSuccessListener {
-        void onConnectSuccess();
-    }
 
     /**
      * Интерфейс слушателя результата публикации сообщения.
@@ -43,9 +36,17 @@ public class MQTTManager {
         void onPublishFailure(Throwable exception);
     }
 
-    // Конструктор принимает Context (необходим для создания MqttAndroidClient)
-    public MQTTManager(Context context) {
-        this.context = context;
+    public MQTTManager(){
+
+    }
+
+    public MQTTManager(MQTTManager mqtt){
+        this.url = mqtt.getURL();
+        this.port = mqtt.getPort();
+        this.protocol = mqtt.getProtocol();
+        this.username = mqtt.getUsername();
+        this.password = mqtt.getPassword();
+        this.clientId = mqtt.getClientId();
     }
 
     // --------------------- Методы для настройки ---------------------
@@ -137,6 +138,23 @@ public class MQTTManager {
         return this.clientId;
     }
 
+    public static Context getContext(){
+        return context;
+    }
+
+    public static void setContext(Context context){
+        MQTTManager.context = context;
+    }
+
+    public void setMQTTCallback(MqttCallbackExtended callback){
+        mqttCallbackExtended = callback;
+    }
+
+    public boolean isConnected(){
+        if(mqttClient == null) return false;
+        return mqttClient.isConnected();
+    }
+
 
     /**
      * Асинхронно публикует данные по заданному топику.
@@ -193,7 +211,7 @@ public class MQTTManager {
      *
      * @param listener слушатель успешного подключения (может быть null)
      */
-    public void connect(final OnConnectSuccessListener listener) {
+    public void connect(IMqttActionListener listener) {
         if (url == null || url.isEmpty()) {
             Log.e(TAG, "URL не установлен.");
             return;
@@ -211,34 +229,23 @@ public class MQTTManager {
         // Создаём экземпляр клиента MQTT
         mqttClient = new MqttAndroidClient(context, fullUri, clientId);
 
+        mqttClient.setCallback(mqttCallbackExtended);
+
         MqttConnectOptions options = new MqttConnectOptions();
 
         options.setAutomaticReconnect(true);  // Включаем автореконнект
         options.setCleanSession(false);       // Сохраняем сессию для повторных подключений
         options.setKeepAliveInterval(60);
 
-        if (username != null) {
+        if (username != null && !username.isEmpty()) {
             options.setUserName(username);
         }
-        if (password != null) {
+        if (password != null && !password.isEmpty()) {
             options.setPassword(password.toCharArray());
         }
 
         try {
-            mqttClient.connect(options, null, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.d(TAG, "Подключение прошло успешно");
-                    if (listener != null) {
-                        listener.onConnectSuccess();
-                    }
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.e(TAG, "Ошибка подключения: " + exception.getMessage());
-                }
-            });
+            mqttClient.connect(options, null, listener);
         } catch (MqttException e) {
             Log.e(TAG, "Исключение при попытке подключения", e);
         }
@@ -257,4 +264,8 @@ public class MQTTManager {
             }
         }
     }
+
+    private static Context context;
+
+    private MqttCallbackExtended mqttCallbackExtended;
 }
