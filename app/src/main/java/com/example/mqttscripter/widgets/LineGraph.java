@@ -20,17 +20,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-public class DotGraph implements IWidget {
+public class LineGraph implements IWidget {
 
     MQTTManager mqtt;
     Context context;
     private LineChart lineChart;
     private int maxEntrys = 10;
 
-    public DotGraph(Context context){
+    public LineGraph(Context context){
         this.context = context;
         lineChart = new LineChart(context);
 
@@ -111,7 +110,7 @@ public class DotGraph implements IWidget {
 
     @Override
     public String getWidgetName(){
-        return "dot_graph";
+        return "line_graph";
     }
 
     @Override

@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.mqttscripter.widgets.DotGraph;
+import com.example.mqttscripter.widgets.LineGraph;
 
 public class WidgetAdder extends Fragment {
 
@@ -49,7 +49,7 @@ public class WidgetAdder extends Fragment {
         text1.setText("График");
 
         panel1.setOnClickListener((View v)->{
-            panel.addWidget(new DotGraph(context));
+            panel.addWidget(new LineGraph(context));
             goBack();
         });
     }

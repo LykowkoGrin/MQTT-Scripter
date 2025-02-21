@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.mqttscripter.widgets.DotGraph;
+import com.example.mqttscripter.widgets.LineGraph;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -20,9 +20,7 @@ import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class MQTTPanel extends Fragment {
@@ -41,6 +39,33 @@ public class MQTTPanel extends Fragment {
     public MQTTPanel(Context context){
         super(R.layout.panel);
         this.context = context;
+
+        mqtt = new MQTTManager(context);
+        mqtt.setMQTTCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean reconnect, String serverURI) {
+                if(statusButton != null){
+                    statusButton.setImageResource(R.drawable.baseline_signal_wifi_4_bar_50);
+                }
+            }
+
+            @Override
+            public void connectionLost(Throwable cause) {
+                if(statusButton != null){
+                    statusButton.setImageResource(R.drawable.baseline_signal_wifi_off_50);
+                }
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+        });
     }
 
     @Override
@@ -104,7 +129,7 @@ public class MQTTPanel extends Fragment {
     public void setPanelName(String panelName){
         this.panelName = panelName;
     }
-
+/*
     public void setMQTTManager(MQTTManager mqtt){
         this.mqtt = mqtt;
 
@@ -136,7 +161,7 @@ public class MQTTPanel extends Fragment {
             });
         }
     }
-
+*/
     public MQTTManager getMQTTManager(){
         return mqtt;
     }
@@ -183,8 +208,8 @@ public class MQTTPanel extends Fragment {
 
     private IWidget getWidgetByName(String name){
         switch (name){
-            case "dot_graph":
-                return new DotGraph(context);
+            case "line_graph":
+                return new LineGraph(context);
 
         }
         return null;

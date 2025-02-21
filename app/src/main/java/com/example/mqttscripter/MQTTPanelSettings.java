@@ -14,33 +14,37 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MQTTPanelSettings extends Fragment {
 
     private LayoutInflater inflater;
-    private MQTTManager mqtt;
-    private boolean isNewPanel = false;
 
-    private Context context;
+    String panelName = "";
+    String url = "";
+    String protocol = "";
+    String username = "";
+    String password = "";
+    String clientID = "";
+    int port = 2000;
+
+    boolean isNewPanel = false;
+    Context context;
+
 
     public MQTTPanelSettings(Context context, MQTTPanel panel){
         super(R.layout.panel_settings);
 
         this.panel = panel;
         this.context = context;
-
-        isNewPanel = panel.getMQTTManager() == null;
-
-        if(isNewPanel){
-            this.mqtt = new MQTTManager(context);
-        }
-        else{
-            this.mqtt = new MQTTManager(panel.getMQTTManager());
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.panel_settings, container, false);
+
+        isNewPanel = panel.getPanelName().isEmpty();
 
         this.inflater = inflater;
 
@@ -64,10 +68,17 @@ public class MQTTPanelSettings extends Fragment {
             handleClientID(view);
 
             if(allOk){
-                panel.setMQTTManager(mqtt);
+                MQTTManager mqtt = panel.getMQTTManager();
+                panel.setPanelName(panelName);
+
+                mqtt.setPassword(password);
+                mqtt.setUsername(username);
+                mqtt.setPort(port);
+                mqtt.setURL(url);
+                mqtt.setClientId(clientID);
+                mqtt.setProtocol(protocol);
 
                 if(isNewPanel) MQTTPanel.panels.add(panel);
-
                 goBack(false);
             }
         });
@@ -92,7 +103,7 @@ public class MQTTPanelSettings extends Fragment {
             });
         }
 
-        switch(mqtt.getProtocol()){
+        switch(protocol){
             case "tcp":
                 protocolSpinner.setSelection(0);
                 break;
@@ -107,12 +118,12 @@ public class MQTTPanelSettings extends Fragment {
                 break;
         }
 
-        ((TextInputEditText)view.findViewById(R.id.edit_panel_name)).setText(panel.getPanelName());
-        ((TextInputEditText)view.findViewById(R.id.edit_url)).setText(mqtt.getURL());
-        ((TextInputEditText)view.findViewById(R.id.edit_port)).setText(String.valueOf(mqtt.getPort()));
-        ((TextInputEditText)view.findViewById(R.id.edit_username)).setText(mqtt.getUsername());
-        ((TextInputEditText)view.findViewById(R.id.edit_password)).setText(mqtt.getPassword());
-        ((TextInputEditText)view.findViewById(R.id.edit_client_id)).setText(mqtt.getClientId());
+        ((TextInputEditText)view.findViewById(R.id.edit_panel_name)).setText(panelName);
+        ((TextInputEditText)view.findViewById(R.id.edit_url)).setText(url);
+        ((TextInputEditText)view.findViewById(R.id.edit_port)).setText(String.valueOf(port));
+        ((TextInputEditText)view.findViewById(R.id.edit_username)).setText(username);
+        ((TextInputEditText)view.findViewById(R.id.edit_password)).setText(password);
+        ((TextInputEditText)view.findViewById(R.id.edit_client_id)).setText(clientID);
 
 
         return view;
@@ -130,7 +141,7 @@ public class MQTTPanelSettings extends Fragment {
             return false;
         }
 
-        panel.setPanelName(text);
+        panelName = text;
         layoutPanelName.setError(null);
 
         return true;
@@ -151,7 +162,7 @@ public class MQTTPanelSettings extends Fragment {
 
         layoutPanelName.setError(null);
 
-        mqtt.setURL(text);
+        url = text;
 
         return true;
     }
@@ -161,18 +172,19 @@ public class MQTTPanelSettings extends Fragment {
 
         int itemId = (int)spinner.getSelectedItemId();
 
+
         switch (itemId){
             case 0:
-                mqtt.setProtocol("tcp");
+                protocol = "tcp";
                 break;
             case 1:
-                mqtt.setProtocol("ssl");
+                protocol = "ssl";
                 break;
             case 2:
-                mqtt.setProtocol("ws");
+                protocol = "ws";
                 break;
             case 3:
-                mqtt.setProtocol("wss");
+                protocol = "wss";
                 break;
         }
 
@@ -192,7 +204,7 @@ public class MQTTPanelSettings extends Fragment {
         }
 
         try{
-            mqtt.setPort(Integer.parseInt(text));
+            port = Integer.parseInt(text);
         }
         catch (Exception ex){
             layoutPanelName.setError("Ошибка: неверное значение порта!"); // Покажет ошибку
@@ -219,7 +231,7 @@ public class MQTTPanelSettings extends Fragment {
 
         //layoutPanelName.setError(null);
 
-        mqtt.setUsername(text);
+        username = text;
 
         return true;
     }
@@ -238,7 +250,7 @@ public class MQTTPanelSettings extends Fragment {
 
         //layoutPanelName.setError(null);
 
-        mqtt.setPassword(text);
+        password = text;
 
         return true;
     }
@@ -257,7 +269,7 @@ public class MQTTPanelSettings extends Fragment {
 
         //layoutPanelName.setError(null);
 
-        mqtt.setClientId(text);
+        clientID = text;
 
         return true;
     }

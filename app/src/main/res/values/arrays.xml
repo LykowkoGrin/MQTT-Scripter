@@ -7,4 +7,10 @@
         <item>Websocket</item>
         <item>Websocket-SSL</item>
     </string-array>
+
+    <string-array name="QoS_options">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>
