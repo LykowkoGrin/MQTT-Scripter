@@ -17,9 +17,12 @@ public class HomeFragment extends Fragment {
 
     LinearLayout items;
     LayoutInflater inflater;
+    Context context;
 
-    public HomeFragment(){
+    public HomeFragment(Context context){
         super(R.layout.all_panels);
+
+        this.context = context;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class HomeFragment extends Fragment {
             panelNameText.setText(mqttPanel.getPanelName());
 
             panelItemView.setOnClickListener((View v) ->{
-                MQTTPanelSettings.setPanel(mqttPanel);
+                //MQTTPanelSettings.setPanel(mqttPanel);
 
                 FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.myFragmentContainer, mqttPanel);
@@ -55,10 +58,9 @@ public class HomeFragment extends Fragment {
 
         View addButton = view.findViewById(R.id.create_panel);
         addButton.setOnClickListener((View v) ->{
-            MQTTPanelSettings.setPanel(new MQTTPanel());
 
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings());
+            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(context, new MQTTPanel(context)));
             transaction.commit();
         });
 

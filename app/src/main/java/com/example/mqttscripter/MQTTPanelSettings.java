@@ -20,13 +20,18 @@ public class MQTTPanelSettings extends Fragment {
     private MQTTManager mqtt;
     private boolean isNewPanel = false;
 
-    public MQTTPanelSettings(){
+    private Context context;
+
+    public MQTTPanelSettings(Context context, MQTTPanel panel){
         super(R.layout.panel_settings);
+
+        this.panel = panel;
+        this.context = context;
 
         isNewPanel = panel.getMQTTManager() == null;
 
         if(isNewPanel){
-            this.mqtt = new MQTTManager();
+            this.mqtt = new MQTTManager(context);
         }
         else{
             this.mqtt = new MQTTManager(panel.getMQTTManager());
@@ -260,7 +265,7 @@ public class MQTTPanelSettings extends Fragment {
     private void goBack(boolean isDeleted){
         if(isNewPanel || isDeleted){
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new HomeFragment());
+            transaction.replace(R.id.myFragmentContainer, new HomeFragment(context));
             transaction.commit();
         }
         else{
@@ -270,13 +275,6 @@ public class MQTTPanelSettings extends Fragment {
         }
     }
 
-
-
-
-    public static void setPanel(MQTTPanel panel){
-        MQTTPanelSettings.panel = panel;
-    }
-
-    private static MQTTPanel panel;
+    private MQTTPanel panel;
 
 }

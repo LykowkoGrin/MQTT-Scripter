@@ -19,8 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        MQTTManager.setContext(this);
-        loadFragment(new HomeFragment());
+        loadFragment(new HomeFragment(this));
 
     }
 

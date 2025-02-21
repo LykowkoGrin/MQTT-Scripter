@@ -12,6 +12,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.UUID;
 
+import javax.net.ssl.SSLSocketFactory;
+
 public class MQTTManager {
 
     private static final String TAG = "MQTTManager";
@@ -26,6 +28,7 @@ public class MQTTManager {
 
     // Клиент MQTT
     private MqttAndroidClient mqttClient;
+    private Context context;
 
 
     /**
@@ -36,8 +39,8 @@ public class MQTTManager {
         void onPublishFailure(Throwable exception);
     }
 
-    public MQTTManager(){
-
+    public MQTTManager(Context context){
+        this.context = context;
     }
 
     public MQTTManager(MQTTManager mqtt){
@@ -47,6 +50,8 @@ public class MQTTManager {
         this.username = mqtt.getUsername();
         this.password = mqtt.getPassword();
         this.clientId = mqtt.getClientId();
+
+        this.context = mqtt.context;
     }
 
     // --------------------- Методы для настройки ---------------------
@@ -138,14 +143,6 @@ public class MQTTManager {
         return this.clientId;
     }
 
-    public static Context getContext(){
-        return context;
-    }
-
-    public static void setContext(Context context){
-        MQTTManager.context = context;
-    }
-
     public void setMQTTCallback(MqttCallbackExtended callback){
         mqttCallbackExtended = callback;
     }
@@ -233,6 +230,10 @@ public class MQTTManager {
 
         MqttConnectOptions options = new MqttConnectOptions();
 
+        if(protocol.equals("wss") || protocol.equals("ssl")){
+            options.setSocketFactory(SSLSocketFactory.getDefault());
+        }
+
         options.setAutomaticReconnect(true);  // Включаем автореконнект
         options.setCleanSession(false);       // Сохраняем сессию для повторных подключений
         options.setKeepAliveInterval(60);
@@ -264,8 +265,6 @@ public class MQTTManager {
             }
         }
     }
-
-    private static Context context;
 
     private MqttCallbackExtended mqttCallbackExtended;
 }

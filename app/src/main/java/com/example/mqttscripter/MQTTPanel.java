@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.mqttscripter.widgets.DotGraph;
+
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -30,8 +32,15 @@ public class MQTTPanel extends Fragment {
     private MQTTManager mqtt;
     private ImageButton statusButton;
 
-    public MQTTPanel(){
+    private Context context;
+
+    private LinearLayout widgetsLayout;
+
+    private Set<IWidget> widgets = new HashSet<>();
+
+    public MQTTPanel(Context context){
         super(R.layout.panel);
+        this.context = context;
     }
 
     @Override
@@ -43,6 +52,7 @@ public class MQTTPanel extends Fragment {
         View backButton = view.findViewById(R.id.back);
         View settingsButton = view.findViewById(R.id.settings_button);
         View connButton = view.findViewById(R.id.conn_status);
+        View addWidgetButton = view.findViewById(R.id.create_widget);
 
         connButton.setOnClickListener((View v)->{
             if(mqtt.isConnected()) disconnect();
@@ -51,15 +61,21 @@ public class MQTTPanel extends Fragment {
 
         backButton.setOnClickListener((View v) ->{
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new HomeFragment());
+            transaction.replace(R.id.myFragmentContainer, new HomeFragment(context));
             transaction.commit();
         });
 
         settingsButton.setOnClickListener((View v) ->{
-            MQTTPanelSettings.setPanel(this);
+            //MQTTPanelSettings.setPanel(this);
 
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings());
+            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(context,this));
+            transaction.commit();
+        });
+
+        addWidgetButton.setOnClickListener((View v)->{
+            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.myFragmentContainer, new WidgetAdder(context,this));
             transaction.commit();
         });
 
@@ -67,6 +83,16 @@ public class MQTTPanel extends Fragment {
 
         TextView viewPanelName = view.findViewById(R.id.panel_name);
         viewPanelName.setText(panelName);
+
+
+        widgetsLayout = view.findViewById(R.id.widgets_layout);
+
+        for(IWidget widget : widgets){
+            if (widget.getView().getParent() != null)
+                ((ViewGroup) widget.getView().getParent()).removeView(widget.getView());
+
+            widgetsLayout.addView(widget.getView());
+        }
 
         return view;
     }
@@ -149,5 +175,21 @@ public class MQTTPanel extends Fragment {
         }
     }
 
+    public void addWidget(IWidget widget){
+        widgets.add(widget);
+
+        widgetsLayout.addView(widget.getView());
+    }
+
+    private IWidget getWidgetByName(String name){
+        switch (name){
+            case "dot_graph":
+                return new DotGraph(context);
+
+        }
+        return null;
+    }
+
     static public Set<MQTTPanel> panels = new HashSet<>();
+
 }

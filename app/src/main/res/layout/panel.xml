@@ -72,7 +72,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/settings_button">
             <!-- Здесь можно программно добавлять элементы -->
+
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/create_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/baseline_add_circle_outline_50"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/widgets_layout" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
