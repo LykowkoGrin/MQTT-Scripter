@@ -49,7 +49,7 @@ public class WidgetAdder extends Fragment {
         text1.setText("График");
 
         panel1.setOnClickListener((View v)->{
-            panel.addWidget(new LineGraph(context));
+            panel.addWidget(new LineGraph(context,panel));
             goBack();
         });
     }

@@ -47,6 +47,10 @@ public class MQTTPanel extends Fragment {
                 if(statusButton != null){
                     statusButton.setImageResource(R.drawable.baseline_signal_wifi_4_bar_50);
                 }
+                for(IWidget widget : widgets){
+                    widget.connect(mqtt);
+                }
+
             }
 
             @Override
@@ -129,39 +133,7 @@ public class MQTTPanel extends Fragment {
     public void setPanelName(String panelName){
         this.panelName = panelName;
     }
-/*
-    public void setMQTTManager(MQTTManager mqtt){
-        this.mqtt = mqtt;
 
-        if(mqtt != null){
-            mqtt.setMQTTCallback(new MqttCallbackExtended() {
-                @Override
-                public void connectComplete(boolean reconnect, String serverURI) {
-                    if(statusButton != null){
-                        statusButton.setImageResource(R.drawable.baseline_signal_wifi_4_bar_50);
-                    }
-                }
-
-                @Override
-                public void connectionLost(Throwable cause) {
-                    if(statusButton != null){
-                        statusButton.setImageResource(R.drawable.baseline_signal_wifi_off_50);
-                    }
-                }
-
-                @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
-
-                }
-
-                @Override
-                public void deliveryComplete(IMqttDeliveryToken token) {
-
-                }
-            });
-        }
-    }
-*/
     public MQTTManager getMQTTManager(){
         return mqtt;
     }
@@ -209,7 +181,7 @@ public class MQTTPanel extends Fragment {
     private IWidget getWidgetByName(String name){
         switch (name){
             case "line_graph":
-                return new LineGraph(context);
+                return new LineGraph(context, this);
 
         }
         return null;

@@ -2,11 +2,17 @@ package com.example.mqttscripter.widgets;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.fragment.app.FragmentTransaction;
+
 import com.example.mqttscripter.IWidget;
 import com.example.mqttscripter.MQTTManager;
+import com.example.mqttscripter.MQTTPanel;
+import com.example.mqttscripter.MQTTPanelSettings;
+import com.example.mqttscripter.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.YAxis;
@@ -16,20 +22,27 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
 public class LineGraph implements IWidget {
 
-    MQTTManager mqtt;
     Context context;
     private LineChart lineChart;
     private int maxEntrys = 10;
 
-    public LineGraph(Context context){
+    String topic = "";
+    String graphName = "";
+    String dataLabel = "";
+    int QoS = 0;
+
+    public LineGraph(Context context, MQTTPanel panel){
         this.context = context;
         lineChart = new LineChart(context);
 
@@ -38,7 +51,6 @@ public class LineGraph implements IWidget {
                 600
         );
         lineChart.setLayoutParams(params);
-
 
         LineDataSet dataSet = new LineDataSet(new ArrayList<>(), "Пример данных");
         dataSet.setColor(Color.BLUE);
@@ -50,8 +62,6 @@ public class LineGraph implements IWidget {
         LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
 
-
-
         lineChart.setNoDataText("");
 
         Description description = new Description();
@@ -60,10 +70,11 @@ public class LineGraph implements IWidget {
 
         lineChart.invalidate();
 
-
-        //addEntry(0,1);
-        //addEntry(10,20);
-        //addEntry(100,500);
+        lineChart.setOnClickListener((View v) -> {
+            FragmentTransaction transaction = panel.requireActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.myFragmentContainer, new LineGraphSettings(this,panel));
+            transaction.commit();
+        });
     }
 
     private void addEntry(float x, float y) {
@@ -80,7 +91,7 @@ public class LineGraph implements IWidget {
             // Добавляем новую точку в набор данных
             data.addEntry(new Entry(x, y), 0);
 
-            // Ограничиваем количество точек, используя maxDots
+            // Ограничиваем количество точек, используя maxEntrys
             if (set.getEntryCount() > maxEntrys) {
                 // Получаем первую (самую старую) точку
                 Entry removedEntry = set.getEntryForIndex(0);
@@ -128,13 +139,76 @@ public class LineGraph implements IWidget {
         return (View)lineChart;
     }
 
-    @Override
-    public void setMQTTManager(@NotNull MQTTManager mqtt){
-        this.mqtt = mqtt;
-    }
+
 
     public void setMaxEntrys(int maxEntrys){
         this.maxEntrys = maxEntrys;
     }
 
+    public void setGraphName(String name) {
+        graphName = name;
+
+        Description description = lineChart.getDescription();
+        if (description == null) {
+            description = new Description();
+        }
+        description.setText(name);
+        lineChart.setDescription(description);
+        lineChart.invalidate();
+    }
+
+    public void setDataLabel(String label) {
+        dataLabel = label;
+
+        LineData data = lineChart.getData();
+        if (data != null) {
+            ILineDataSet set = data.getDataSetByIndex(0);
+            if (set instanceof LineDataSet) {
+                ((LineDataSet)set).setLabel(label);
+                lineChart.invalidate();
+            }
+        }
+    }
+
+    public void setTopic(String topic){
+        this.topic = topic;
+    }
+
+    public void setQoS(int QoS){
+        this.QoS = QoS;
+    }
+
+
+
+    public int getQoS(){
+        return QoS;
+    }
+
+    public String getGraphName(){
+        return graphName;
+    }
+
+    public int getMaxEntrys(){
+        return maxEntrys;
+    }
+
+    public String getTopic(){
+        return topic;
+    }
+
+    public String getDataLabel(){
+        return dataLabel;
+    }
+
+    @Override
+    public void connect(@NotNull MQTTManager mqtt){
+        if(topic.isEmpty()) return;
+
+        mqtt.subscribe(topic, QoS, new IMqttMessageListener() {
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                Log.d("LineGraph", Arrays.toString(message.getPayload()));
+            }
+        });
+    }
 }

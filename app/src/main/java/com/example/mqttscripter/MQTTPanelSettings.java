@@ -19,8 +19,6 @@ import java.util.Map;
 
 public class MQTTPanelSettings extends Fragment {
 
-    private LayoutInflater inflater;
-
     String panelName = "";
     String url = "";
     String protocol = "";
@@ -46,12 +44,19 @@ public class MQTTPanelSettings extends Fragment {
 
         isNewPanel = panel.getPanelName().isEmpty();
 
-        this.inflater = inflater;
 
         View cancelButton = view.findViewById(R.id.button_cancel);
         View acceptButton = view.findViewById(R.id.button_accept);
         View deleteButton = view.findViewById(R.id.button_delete);
         Spinner protocolSpinner = view.findViewById(R.id.spinner_protocol);
+
+        panelName = panel.getPanelName();
+        url = panel.getMQTTManager().getURL();
+        protocol = panel.getMQTTManager().getProtocol();
+        username = panel.getMQTTManager().getUsername();
+        password = panel.getMQTTManager().getPassword();
+        clientID = panel.getMQTTManager().getClientId();
+        port = panel.getMQTTManager().getPort();
 
 
         cancelButton.setOnClickListener((View v) -> {

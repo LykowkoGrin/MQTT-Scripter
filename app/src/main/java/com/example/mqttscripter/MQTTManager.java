@@ -5,10 +5,12 @@ import android.util.Log;
 
 import cloud.deepblue.mqttfix.mqtt.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.UUID;
 
@@ -30,14 +32,6 @@ public class MQTTManager {
     private MqttAndroidClient mqttClient;
     private Context context;
 
-
-    /**
-     * Интерфейс слушателя результата публикации сообщения.
-     */
-    public interface OnPublishListener {
-        void onPublishSuccess();
-        void onPublishFailure(Throwable exception);
-    }
 
     public MQTTManager(Context context){
         this.context = context;
@@ -158,46 +152,37 @@ public class MQTTManager {
      * Если клиент не подключён, вызывается onPublishFailure() слушателя.
      *
      * @param topic    топик для публикации
-     * @param data     строка с данными для публикации
-     * @param listener слушатель результата публикации (может быть null)
+     * @param message     сообщение для публикации
+     * @param listener случшатель умпешной и нет публикации
      */
-    public void publish(final String topic, final String data, final OnPublishListener listener) {
+    public void publish(final String topic, MqttMessage message, IMqttActionListener listener) {
         if (mqttClient == null || !mqttClient.isConnected()) {
             Log.e(TAG, "Клиент не подключён. Публикация невозможна.");
-            if (listener != null) {
-                listener.onPublishFailure(new IllegalStateException("MQTT client is not connected"));
-            }
+            listener.onFailure(null,new Exception("No server connection"));
             return;
         }
 
         try {
-            // Публикуем сообщение. Параметры: topic, payload, qos, retained, userContext, callback.
-            mqttClient.publish(topic, data.getBytes(), 1, false, null, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.d(TAG, "Публикация прошла успешно для топика: " + topic);
-                    if (listener != null) {
-                        listener.onPublishSuccess();
-                    }
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.e(TAG, "Ошибка публикации для топика " + topic + ": " + exception.getMessage());
-                    if (listener != null) {
-                        listener.onPublishFailure(exception);
-                    }
-                }
-            });
-        } catch (MqttException e) {
-            Log.e(TAG, "Исключение при публикации сообщения", e);
-            if (listener != null) {
-                listener.onPublishFailure(e);
-            }
+            mqttClient.publish(topic,message,context,listener);
+        }
+        catch (Exception e){
+            Log.e("publish",e.toString());
         }
     }
 
+    public void subscribe(String topic, int qos, IMqttMessageListener messageListener) {
+        if (mqttClient == null || !mqttClient.isConnected()) {
+            Log.e(TAG, "Клиент не подключён. Подписка невозможна.");
+            return;
+        }
 
+        try{
+            mqttClient.subscribe(topic,qos,messageListener);
+        }
+        catch (Exception e){
+            Log.e("subscribe",e.toString());
+        }
+    }
 
 
     // --------------------- Методы подключения ---------------------

@@ -11,7 +11,7 @@ public interface IWidget {
 
     public Map<String,String> getSavedData();
     public void setupFromSavedData(Map<String,String> data);
-    public void setMQTTManager(@NotNull MQTTManager mqtt);
+    public void connect(@NotNull MQTTManager mqtt);
 
     public View getView();
 }
