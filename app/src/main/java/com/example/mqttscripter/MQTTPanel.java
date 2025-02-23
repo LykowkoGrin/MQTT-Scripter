@@ -40,7 +40,8 @@ public class MQTTPanel extends Fragment {
         super(R.layout.panel);
         this.context = context;
 
-        mqtt = new MQTTManager(context);
+        mqtt = new MQTTManager(BackgroundService.getContext());
+
         mqtt.setMQTTCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
