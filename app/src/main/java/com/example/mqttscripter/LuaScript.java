@@ -23,6 +23,10 @@ public class LuaScript {
         this.content = content;
     }
 
+    public String getFileName(){
+        return fileName;
+    }
+
     public void execute() {
         if (content == null || error != null) return;
 

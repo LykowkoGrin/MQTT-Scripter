@@ -1,5 +1,6 @@
 package com.example.mqttscripter.widgets;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -25,6 +27,7 @@ public class LineGraphSettings extends Fragment {
     private LineGraph graph;
     private MQTTPanel panel;
     private LuaScriptGrabber luaGrabber;
+    private LuaScript luaScript;
 
     private String graphName = "";
     private String topic = "";
@@ -46,12 +49,17 @@ public class LineGraphSettings extends Fragment {
         View view = inflater.inflate(R.layout.graph_settings, container, false);
 
         luaGrabber = new LuaScriptGrabber(this);
+        luaScript = graph.getLuaScript();
 
         View cancelButton = view.findViewById(R.id.button_cancel);
         View acceptButton = view.findViewById(R.id.button_accept);
         View deleteButton = view.findViewById(R.id.button_delete);
         View scriptButton = view.findViewById(R.id.choose_lua);
+        TextView loadedFileText = view.findViewById(R.id.loaded_file_name);
         Spinner qosSpinner = view.findViewById(R.id.spinner_QoS);
+
+        loadedFileText.setText(luaScript.getFileName());
+        loadedFileText.setTextColor(Color.GREEN);
 
         graphName = graph.getGraphName();
         topic = graph.getTopic();
@@ -93,16 +101,20 @@ public class LineGraphSettings extends Fragment {
         });
 
         scriptButton.setOnClickListener((View v)->{
-            //FragmentActivity activity = getActivity();
+
             luaGrabber.startChoose(new LuaScriptGrabber.LuaScriptResultCallback() {
                 @Override
                 public void onScriptLoaded(LuaScript script) {
-                    Log.d("grabber","onScriptLoaded");
+                    luaScript = script;
+                    loadedFileText.setText(script.getFileName());
+                    loadedFileText.setTextColor(Color.GREEN);
+                    graph.setLuaScript(luaScript);
                 }
 
                 @Override
                 public void onError(String message) {
-                    Log.e("grabber",message);
+                    loadedFileText.setText("Только .lua и .txt!");
+                    loadedFileText.setTextColor(Color.RED);
                 }
             });
 

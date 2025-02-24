@@ -1,144 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
-    <!-- Graph Name -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layout_graph_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_graph_name"
-            android:layout_width="match_parent"
+        <!-- Graph Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_graph_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="*Graph Name"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Topic -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layout_topic"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_graph_name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_graph_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="*Graph Name"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_topic"
-            android:layout_width="match_parent"
+        <!-- Topic -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_topic"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="*Topic"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/layout_graph_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Текст для выбора QoS -->
-    <TextView
-        android:id="@+id/text_view_QoS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Уровень QoS:"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_topic"
-        app:layout_constraintStart_toStartOf="parent" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_topic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="*Topic"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- QoS Spinner -->
-    <Spinner
-        android:id="@+id/spinner_QoS"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        app:layout_constraintTop_toBottomOf="@id/text_view_QoS"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Max Dots -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layout_max_dots"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/spinner_QoS"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_max_dots"
-            android:layout_width="match_parent"
+        <!-- Текст для выбора QoS -->
+        <TextView
+            android:id="@+id/text_view_QoS"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Max Dots"
-            android:inputType="number" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:text="Уровень QoS:"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/layout_topic"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Value Name -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layout_value_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_max_dots"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_value_name"
-            android:layout_width="match_parent"
+        <!-- QoS Spinner -->
+        <Spinner
+            android:id="@+id/spinner_QoS"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Value Name"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@id/text_view_QoS"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/choose_lua"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Загрузить скрипт"
-        android:layout_marginTop="16dp"
+        <!-- Max Dots -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_max_dots"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/spinner_QoS"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        app:layout_constraintTop_toBottomOf="@id/layout_value_name"
-        app:layout_constraintStart_toStartOf="parent" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_max_dots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Max Dots"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Принять -->
-    <Button
-        android:id="@+id/button_accept"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Принять"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/choose_lua"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!-- Value Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_value_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/layout_max_dots"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Отменить -->
-    <Button
-        android:id="@+id/button_cancel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Отменить"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/button_accept"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_value_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Value Name"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Удалить -->
-    <Button
-        android:id="@+id/button_delete"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Удалить"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/button_cancel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/choose_lua"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Загрузить скрипт"
+            android:layout_marginTop="16dp"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="@id/layout_value_name"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/loaded_file_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/button_accept"
+            app:layout_constraintStart_toEndOf="@+id/choose_lua"
+            app:layout_constraintTop_toBottomOf="@+id/layout_value_name" />
+
+        <!-- Принять -->
+        <Button
+            android:id="@+id/button_accept"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Принять"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/choose_lua"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Отменить -->
+        <Button
+            android:id="@+id/button_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Отменить"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/button_accept"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Удалить -->
+        <Button
+            android:id="@+id/button_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Удалить"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/button_cancel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

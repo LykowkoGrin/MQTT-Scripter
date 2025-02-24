@@ -38,7 +38,7 @@ public class LineGraph implements IWidget {
     Context context;
     private LineChart lineChart;
     private int maxEntrys = 10;
-    private LuaScript luaScript;
+    private LuaScript luaScript = null;
 
     String topic = "";
     String graphName = "";
@@ -208,16 +208,22 @@ public class LineGraph implements IWidget {
         this.luaScript = luaScript;
     }
 
+    public LuaScript getLuaScript(){
+        return luaScript;
+    }
+
 
 
     @Override
     public void messageArrived(String topic, MqttMessage message){
         Log.d("LineGraph", Arrays.toString(message.getPayload()));
 
+        if(luaScript == null) return;
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+                luaScript.execute();
             }
         }).start();
     }

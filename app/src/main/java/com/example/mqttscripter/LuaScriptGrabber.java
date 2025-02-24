@@ -9,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,26 +27,31 @@ public class LuaScriptGrabber {
 
     public LuaScriptGrabber(@NonNull FragmentActivity activity) {
         this.contextRef = new WeakReference<>(activity);
+        initLaunchers(activity);
+    }
+
+    public LuaScriptGrabber(@NonNull Fragment fragment) {
+        this.contextRef = new WeakReference<>(fragment.getContext());
+        initLaunchers(fragment);
+    }
+
+    private void initLaunchers(FragmentActivity activity) {
         this.filePickerLauncher = activity.registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
                 this::handleFileResult
         );
     }
 
-
-    public LuaScriptGrabber(@NonNull Fragment fragment) {
-        this.contextRef = new WeakReference<>(fragment.getContext());
-        try{
-            this.filePickerLauncher = fragment.registerForActivityResult(
-                    new ActivityResultContracts.GetContent(),
-                    this::handleFileResult
-            );
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+    private void initLaunchers(Fragment fragment) {
+        this.filePickerLauncher = fragment.registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                this::handleFileResult
+        );
     }
 
+    /**
+     * Запускает диалог выбора файлов без фильтров.
+     */
     public void startChoose(LuaScriptResultCallback callback) {
         this.callback = callback;
         Context context = contextRef.get();
@@ -55,10 +59,13 @@ public class LuaScriptGrabber {
             callback.onError("Context is not available");
             return;
         }
-
-        filePickerLauncher.launch("application/x-lua");
+        // Запуск выбора с универсальным фильтром "*/*", показывающим все файлы.
+        filePickerLauncher.launch("*/*");
     }
 
+    /**
+     * Обработка выбранного файла.
+     */
     private void handleFileResult(Uri uri) {
         Context context = contextRef.get();
         if (context == null || uri == null) {
@@ -68,14 +75,13 @@ public class LuaScriptGrabber {
 
         try {
             String fileName = getFileName(context, uri);
-            String content = readFileContent(context, uri);
-
-            if (fileName != null && fileName.endsWith(".lua")) {
-                LuaScript script = new LuaScript(fileName, content, null);
-                callback.onScriptLoaded(script);
-            } else {
-                notifyError("Invalid Lua file");
+            if (fileName == null || !(fileName.endsWith(".lua") || fileName.endsWith(".txt"))) {
+                notifyError("Неверное расширение файла. Допустимы только .lua или .txt");
+                return;
             }
+            String content = readFileContent(context, uri);
+            LuaScript script = new LuaScript(fileName, content, null);
+            callback.onScriptLoaded(script);
         } catch (Exception e) {
             notifyError("Error reading file: " + e.getMessage());
         }
@@ -85,10 +91,10 @@ public class LuaScriptGrabber {
         try (Cursor cursor = context.getContentResolver().query(uri, null, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                return nameIndex != -1 ? cursor.getString(nameIndex) : null;
+                return nameIndex != -1 ? cursor.getString(nameIndex) : "Unnamed file";
             }
         }
-        return null;
+        return "Unnamed file";
     }
 
     private String readFileContent(Context context, Uri uri) throws IOException {
