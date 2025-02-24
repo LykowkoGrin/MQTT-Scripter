@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.mqttscripter.IWidget;
+import com.example.mqttscripter.LuaScript;
 import com.example.mqttscripter.MQTTManager;
 import com.example.mqttscripter.MQTTPanel;
 import com.example.mqttscripter.MQTTPanelSettings;
@@ -37,6 +38,7 @@ public class LineGraph implements IWidget {
     Context context;
     private LineChart lineChart;
     private int maxEntrys = 10;
+    private LuaScript luaScript;
 
     String topic = "";
     String graphName = "";
@@ -202,6 +204,9 @@ public class LineGraph implements IWidget {
         return dataLabel;
     }
 
+    public void setLuaScript(LuaScript luaScript){
+        this.luaScript = luaScript;
+    }
 
 
 

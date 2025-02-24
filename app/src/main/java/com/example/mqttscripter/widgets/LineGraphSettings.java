@@ -1,6 +1,7 @@
 package com.example.mqttscripter.widgets;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,9 +9,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.mqttscripter.HomeFragment;
+import com.example.mqttscripter.LuaScript;
+import com.example.mqttscripter.LuaScriptGrabber;
 import com.example.mqttscripter.MQTTPanel;
 import com.example.mqttscripter.R;
 import com.google.android.material.textfield.TextInputEditText;
@@ -20,6 +24,7 @@ public class LineGraphSettings extends Fragment {
 
     private LineGraph graph;
     private MQTTPanel panel;
+    private LuaScriptGrabber luaGrabber;
 
     private String graphName = "";
     private String topic = "";
@@ -40,9 +45,12 @@ public class LineGraphSettings extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.graph_settings, container, false);
 
+        luaGrabber = new LuaScriptGrabber(this);
+
         View cancelButton = view.findViewById(R.id.button_cancel);
         View acceptButton = view.findViewById(R.id.button_accept);
         View deleteButton = view.findViewById(R.id.button_delete);
+        View scriptButton = view.findViewById(R.id.choose_lua);
         Spinner qosSpinner = view.findViewById(R.id.spinner_QoS);
 
         graphName = graph.getGraphName();
@@ -82,6 +90,23 @@ public class LineGraphSettings extends Fragment {
             panel.removeWidget(graph);
 
             goBack();
+        });
+
+        scriptButton.setOnClickListener((View v)->{
+            //FragmentActivity activity = getActivity();
+            luaGrabber.startChoose(new LuaScriptGrabber.LuaScriptResultCallback() {
+                @Override
+                public void onScriptLoaded(LuaScript script) {
+                    Log.d("grabber","onScriptLoaded");
+                }
+
+                @Override
+                public void onError(String message) {
+                    Log.e("grabber",message);
+                }
+            });
+
+
         });
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
