@@ -202,9 +202,19 @@ public class LineGraph implements IWidget {
         return dataLabel;
     }
 
+
+
+
     @Override
     public void messageArrived(String topic, MqttMessage message){
         Log.d("LineGraph", Arrays.toString(message.getPayload()));
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        }).start();
     }
 /*
     @Override

@@ -45,4 +45,6 @@ dependencies {
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0' // Replace v4 & do not use 1.1.0
     implementation project(':mqttfix')
 
+    implementation 'org.luaj:luaj-jse:3.0.1'
+
 }
