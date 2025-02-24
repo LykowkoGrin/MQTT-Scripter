@@ -26,10 +26,13 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.jetbrains.annotations.NotNull;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.TwoArgFunction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class LineGraph implements IWidget {
@@ -220,10 +223,25 @@ public class LineGraph implements IWidget {
 
         if(luaScript == null) return;
 
+
+        TwoArgFunction addEntryLua = new TwoArgFunction() {
+            @Override
+            public LuaValue call(LuaValue arg1, LuaValue arg2) {
+                float x = (float) arg1.checkdouble();
+                float y = (float) arg2.checkdouble();
+                // Вызываем наш приватный метод
+                addEntry(x, y);
+                return LuaValue.NIL;
+            }
+        };
+
+        Map<String, LuaValue> additionalFunctions = new HashMap<>();
+        additionalFunctions.put("addDot",addEntryLua);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                luaScript.execute();
+                luaScript.execute(additionalFunctions);
             }
         }).start();
     }

@@ -5,6 +5,8 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
+import java.util.Map;
+
 
 public class LuaScript {
     public final String fileName;
@@ -27,11 +29,18 @@ public class LuaScript {
         return fileName;
     }
 
-    public void execute() {
+    public void execute(Map<String, LuaValue> additionalFunctions) {
         if (content == null || error != null) return;
 
         try {
             Globals globals = JsePlatform.standardGlobals();
+
+            if (additionalFunctions != null) {
+                for (Map.Entry<String, LuaValue> entry : additionalFunctions.entrySet()) {
+                    globals.set(entry.getKey(), entry.getValue());
+                }
+            }
+
             LuaValue chunk = globals.load(content);
             chunk.call();
         } catch (Exception e) {

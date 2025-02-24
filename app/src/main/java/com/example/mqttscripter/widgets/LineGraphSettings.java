@@ -58,8 +58,10 @@ public class LineGraphSettings extends Fragment {
         TextView loadedFileText = view.findViewById(R.id.loaded_file_name);
         Spinner qosSpinner = view.findViewById(R.id.spinner_QoS);
 
-        loadedFileText.setText(luaScript.getFileName());
-        loadedFileText.setTextColor(Color.GREEN);
+        if(luaScript != null){
+            loadedFileText.setText(luaScript.getFileName());
+            loadedFileText.setTextColor(Color.GREEN);
+        }
 
         graphName = graph.getGraphName();
         topic = graph.getTopic();
