@@ -33,6 +33,7 @@ import java.util.Map;
 
 public class LineGraph implements IWidget {
 
+    MQTTPanel panel;
     Context context;
     private LineChart lineChart;
     private int maxEntrys = 10;
@@ -42,7 +43,8 @@ public class LineGraph implements IWidget {
     String dataLabel = "";
     int QoS = 0;
 
-    public LineGraph(Context context, MQTTPanel panel){
+    public LineGraph(Context context, @NotNull MQTTPanel panel){
+        this.panel = panel;
         this.context = context;
         lineChart = new LineChart(context);
 
@@ -179,7 +181,7 @@ public class LineGraph implements IWidget {
     }
 
 
-
+    @Override
     public int getQoS(){
         return QoS;
     }
@@ -201,6 +203,11 @@ public class LineGraph implements IWidget {
     }
 
     @Override
+    public void messageArrived(String topic, MqttMessage message){
+        Log.d("LineGraph", Arrays.toString(message.getPayload()));
+    }
+/*
+    @Override
     public void connect(@NotNull MQTTManager mqtt){
         if(topic.isEmpty()) return;
 
@@ -210,5 +217,5 @@ public class LineGraph implements IWidget {
                 Log.d("LineGraph", Arrays.toString(message.getPayload()));
             }
         });
-    }
+    }*/
 }

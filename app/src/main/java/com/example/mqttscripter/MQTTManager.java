@@ -184,6 +184,19 @@ public class MQTTManager {
         }
     }
 
+    public void unsubscribe(String topic) {
+        if (mqttClient == null) {
+            Log.e(TAG, "Клиент == null. Отписка невозможна.");
+            return;
+        }
+
+        try {
+            mqttClient.unsubscribe(topic);
+        } catch (Exception e) {
+            Log.e("unsubscribe", e.toString());
+        }
+    }
+
 
     // --------------------- Методы подключения ---------------------
 
@@ -220,7 +233,7 @@ public class MQTTManager {
         }
 
         options.setAutomaticReconnect(true);  // Включаем автореконнект
-        options.setCleanSession(false);       // Сохраняем сессию для повторных подключений
+        options.setCleanSession(true);
         options.setKeepAliveInterval(60);
 
         if (username != null && !username.isEmpty()) {
@@ -242,14 +255,27 @@ public class MQTTManager {
      */
     public void disconnect() {
         if (mqttClient != null && mqttClient.isConnected()) {
-            try {
+            try{
                 mqttClient.disconnect();
-                Log.d(TAG, "Отключение прошло успешно");
-            } catch (MqttException e) {
-                Log.e(TAG, "Ошибка при отключении: " + e.getMessage());
+            }
+            catch (Exception e){
+                e.printStackTrace();
             }
         }
     }
+
+    public void close() {
+        if (mqttClient != null) {
+            try {
+                mqttClient.close();
+                mqttClient = null;
+            } catch (Exception e) {
+                System.err.println("Error closing MQTT client: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private MqttCallbackExtended mqttCallbackExtended;
 }

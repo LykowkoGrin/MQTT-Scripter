@@ -103,7 +103,7 @@ public class MQTTPanelSettings extends Fragment {
             deleteButton.setOnClickListener((View v) ->{
 
                 MQTTPanel.panels.remove(panel);
-
+                panel.deletePanel();
                 goBack(true);
             });
         }

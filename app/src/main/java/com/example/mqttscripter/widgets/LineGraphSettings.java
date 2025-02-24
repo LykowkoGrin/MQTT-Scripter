@@ -70,9 +70,18 @@ public class LineGraphSettings extends Fragment {
                 graph.setDataLabel(valueName);
                 graph.setMaxEntrys(maxDots);
 
+                panel.disconnectWidgetFromTopics(graph);
+                panel.connectWidgetToTopic(graph,graph.getTopic(),graph.getQoS());
+
                 goBack();
             }
 
+        });
+
+        deleteButton.setOnClickListener((View v) ->{
+            panel.removeWidget(graph);
+
+            goBack();
         });
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -94,9 +103,11 @@ public class LineGraphSettings extends Fragment {
     }
 
     private void goBack(){
+
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.myFragmentContainer, panel);
         transaction.commit();
+
     }
 
     private boolean handleGraphName(View view) {

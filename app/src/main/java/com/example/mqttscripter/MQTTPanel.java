@@ -16,11 +16,15 @@ import com.example.mqttscripter.widgets.LineGraph;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class MQTTPanel extends Fragment {
@@ -35,6 +39,7 @@ public class MQTTPanel extends Fragment {
     private LinearLayout widgetsLayout;
 
     private Set<IWidget> widgets = new HashSet<>();
+    private Map<String,IWidget> topics = new HashMap<>();
 
     public MQTTPanel(Context context){
         super(R.layout.panel);
@@ -48,8 +53,9 @@ public class MQTTPanel extends Fragment {
                 if(statusButton != null){
                     statusButton.setImageResource(R.drawable.baseline_signal_wifi_4_bar_50);
                 }
-                for(IWidget widget : widgets){
-                    widget.connect(mqtt);
+                for(Map.Entry<String, IWidget> entry : topics.entrySet()){
+                    if(entry.getKey().isEmpty()) continue;
+                    connectWidgetToTopic(entry.getValue(),entry.getKey(),entry.getValue().getQoS());
                 }
 
             }
@@ -163,6 +169,9 @@ public class MQTTPanel extends Fragment {
         }
         mqtt.disconnect();
     }
+    public void deletePanel(){
+        mqtt.close();
+    }
 
     public void setConnectStatusButton(ImageButton statusButton){
         this.statusButton = statusButton;
@@ -177,6 +186,33 @@ public class MQTTPanel extends Fragment {
         widgets.add(widget);
 
         widgetsLayout.addView(widget.getView());
+
+    }
+    public void removeWidget(IWidget widget){
+        widgets.remove(widget);
+        disconnectWidgetFromTopics(widget);
+    }
+
+    public void disconnectWidgetFromTopics(@NotNull IWidget widget){
+        for(Map.Entry<String, IWidget> entry : topics.entrySet()){
+            if(entry.getValue() != widget) continue;
+
+            topics.remove(entry.getKey());
+            mqtt.unsubscribe(entry.getKey());
+        }
+    }
+
+    public void connectWidgetToTopic(@NotNull IWidget widget, @NotNull String topic, int QoS){
+
+        if(topic.isEmpty()) return;
+
+        topics.put(topic,widget);
+        mqtt.subscribe(topic, QoS, new IMqttMessageListener() {
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                widget.messageArrived(topic,message);
+            }
+        });
     }
 
     private IWidget getWidgetByName(String name){
