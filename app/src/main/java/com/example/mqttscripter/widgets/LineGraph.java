@@ -26,6 +26,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.jetbrains.annotations.NotNull;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.TwoArgFunction;
 
@@ -207,8 +208,9 @@ public class LineGraph implements IWidget {
         return dataLabel;
     }
 
-    public void setLuaScript(LuaScript luaScript){
+    public void setLuaScript(@NotNull LuaScript luaScript){
         this.luaScript = luaScript;
+        this.luaScript.setMqttConsole(panel.getConsole());
     }
 
     public LuaScript getLuaScript(){
@@ -235,13 +237,23 @@ public class LineGraph implements IWidget {
             }
         };
 
-        Map<String, LuaValue> additionalFunctions = new HashMap<>();
-        additionalFunctions.put("addDot",addEntryLua);
+        String messageText = Arrays.toString(message.getPayload());
+
+        Map<String, LuaValue> globalValues = new HashMap<>();
+        globalValues.put("addDot",addEntryLua);
+        globalValues.put("message",LuaValue.valueOf(messageText));
+
+
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                luaScript.execute(additionalFunctions);
+                try{
+                    luaScript.execute(globalValues);
+                }
+                catch (LuaError e){
+                    e.printStackTrace();
+                }
             }
         }).start();
     }

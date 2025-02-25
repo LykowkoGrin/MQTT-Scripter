@@ -32,6 +32,7 @@ public class MQTTPanel extends Fragment {
 
     private String panelName = "";
     private MQTTManager mqtt;
+    private MQTTConsole mqttConsole;
     private ImageButton statusButton;
 
     private Context context;
@@ -46,6 +47,7 @@ public class MQTTPanel extends Fragment {
         this.context = context;
 
         mqtt = new MQTTManager(BackgroundService.getContext());
+        mqttConsole = new MQTTConsole(this);
 
         mqtt.setMQTTCallback(new MqttCallbackExtended() {
             @Override
@@ -89,10 +91,17 @@ public class MQTTPanel extends Fragment {
         View settingsButton = view.findViewById(R.id.settings_button);
         View connButton = view.findViewById(R.id.conn_status);
         View addWidgetButton = view.findViewById(R.id.create_widget);
+        View consoleButton = view.findViewById(R.id.open_console);
 
         connButton.setOnClickListener((View v)->{
             if(mqtt.isConnected()) disconnect();
             else connect();
+        });
+
+        consoleButton.setOnClickListener((View v)->{
+            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.myFragmentContainer, mqttConsole);
+            transaction.commit();
         });
 
         backButton.setOnClickListener((View v) ->{
@@ -170,7 +179,16 @@ public class MQTTPanel extends Fragment {
         mqtt.disconnect();
     }
     public void deletePanel(){
+
         mqtt.close();
+        widgets.clear();
+        topics.clear();
+
+        widgetsLayout = null;
+        mqtt = null;
+        statusButton = null;
+        context = null;
+        mqttConsole = null;
     }
 
     public void setConnectStatusButton(ImageButton statusButton){
@@ -213,6 +231,10 @@ public class MQTTPanel extends Fragment {
                 widget.messageArrived(topic,message);
             }
         });
+    }
+
+    public MQTTConsole getConsole(){
+        return mqttConsole;
     }
 
     private IWidget getWidgetByName(String name){

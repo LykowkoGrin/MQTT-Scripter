@@ -85,7 +85,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/widgets_layout" />
 
-
+        <ImageButton
+            android:id="@+id/open_console"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/baseline_terminal_50"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/widgets_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
