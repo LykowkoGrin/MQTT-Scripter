@@ -30,6 +30,7 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.TwoArgFunction;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -237,7 +238,7 @@ public class LineGraph implements IWidget {
             }
         };
 
-        String messageText = Arrays.toString(message.getPayload());
+        String messageText = new String(message.getPayload(), StandardCharsets.UTF_8);
 
         Map<String, LuaValue> globalValues = new HashMap<>();
         globalValues.put("addDot",addEntryLua);
