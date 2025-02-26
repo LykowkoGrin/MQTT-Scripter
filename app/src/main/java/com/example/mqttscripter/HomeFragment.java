@@ -13,11 +13,15 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class HomeFragment extends Fragment {
 
     LinearLayout items;
     LayoutInflater inflater;
     Context context;
+    private Set<MQTTPanel> panels = new HashSet<>();
 
     public HomeFragment(Context context){
         super(R.layout.all_panels);
@@ -33,7 +37,7 @@ public class HomeFragment extends Fragment {
         items = view.findViewById(R.id.linearLayoutItems);
 
 
-        for(MQTTPanel mqttPanel : MQTTPanel.panels){
+        for(MQTTPanel mqttPanel : panels){
             View panelItemView = inflater.inflate(R.layout.panel_item, null, false);
             TextView panelNameText = panelItemView.findViewById(R.id.item_name);
             panelNameText.setText(mqttPanel.getPanelName());
@@ -60,12 +64,17 @@ public class HomeFragment extends Fragment {
         addButton.setOnClickListener((View v) ->{
 
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(context, new MQTTPanel(context)));
+            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(context, new MQTTPanel(context, this), this));
             transaction.commit();
         });
 
         return view;
     }
 
-
+    public void removePanel(MQTTPanel panel) {
+        panels.remove(panel);
+    }
+    public void addPanel(MQTTPanel panel){
+        panels.add(panel);
+    }
 }

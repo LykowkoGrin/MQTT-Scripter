@@ -41,10 +41,12 @@ public class MQTTPanel extends Fragment {
 
     private Set<IWidget> widgets = new HashSet<>();
     private Map<String,IWidget> topics = new HashMap<>();
+    private HomeFragment home;
 
-    public MQTTPanel(Context context){
+    public MQTTPanel(Context context, HomeFragment home){
         super(R.layout.panel);
         this.context = context;
+        this.home = home;
 
         mqtt = new MQTTManager(BackgroundService.getContext());
         mqttConsole = new MQTTConsole(this);
@@ -106,7 +108,7 @@ public class MQTTPanel extends Fragment {
 
         backButton.setOnClickListener((View v) ->{
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new HomeFragment(context));
+            transaction.replace(R.id.myFragmentContainer, home);
             transaction.commit();
         });
 
@@ -114,7 +116,7 @@ public class MQTTPanel extends Fragment {
             //MQTTPanelSettings.setPanel(this);
 
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(context,this));
+            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(context,this, home));
             transaction.commit();
         });
 
@@ -245,7 +247,5 @@ public class MQTTPanel extends Fragment {
         }
         return null;
     }
-
-    static public Set<MQTTPanel> panels = new HashSet<>();
 
 }

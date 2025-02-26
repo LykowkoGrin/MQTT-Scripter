@@ -33,7 +33,7 @@ public class LineGraphSettings extends Fragment {
     private String topic = "";
     private int qos = 0;
     private int maxDots = 10;
-    private String valueName = "Value Name";
+    private String valueName = "";
 
 
 
@@ -80,7 +80,7 @@ public class LineGraphSettings extends Fragment {
             allOk &= handleTopic(view);
             allOk &= handleQos(view);
             allOk &= handleMaxDots(view);
-            allOk &= handleValueName(view);
+            handleValueName(view);
 
             if(allOk){
 
