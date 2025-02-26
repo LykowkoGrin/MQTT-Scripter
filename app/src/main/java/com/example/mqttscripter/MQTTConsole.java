@@ -55,14 +55,18 @@ public class MQTTConsole extends Fragment {
     public void print(String text) {
         logBuffer.append(text).append("\n");
 
-
-        if (tvConsole != null) {
-            requireActivity().runOnUiThread(() -> {
-                if (tvConsole != null) {
-                    tvConsole.append(text + "\n");
-                    scrollView.post(() -> scrollView.fullScroll(ScrollView.FOCUS_DOWN));
-                }
-            });
+        try{
+            if (tvConsole != null) {
+                requireActivity().runOnUiThread(() -> {
+                    if (tvConsole != null) {
+                        tvConsole.append(text + "\n");
+                        scrollView.post(() -> scrollView.fullScroll(ScrollView.FOCUS_DOWN));
+                    }
+                });
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

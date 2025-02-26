@@ -48,6 +48,8 @@ public class LineGraphSettings extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.graph_settings, container, false);
 
+
+
         luaGrabber = new LuaScriptGrabber(this);
         luaScript = graph.getLuaScript();
 
