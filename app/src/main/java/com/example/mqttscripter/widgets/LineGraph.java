@@ -59,6 +59,7 @@ public class LineGraph implements IWidget {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 600
         );
+        params.bottomMargin = 0;
         lineChart.setLayoutParams(params);
 
         LineDataSet dataSet = new LineDataSet(new ArrayList<>(), "Пример данных");
@@ -78,12 +79,6 @@ public class LineGraph implements IWidget {
         lineChart.setDescription(description);
 
         lineChart.invalidate();
-
-        lineChart.setOnClickListener((View v) -> {
-            FragmentTransaction transaction = panel.requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new LineGraphSettings(this,panel));
-            transaction.commit();
-        });
     }
 
     private void addEntry(float x, float y) {
@@ -148,7 +143,12 @@ public class LineGraph implements IWidget {
         return (View)lineChart;
     }
 
-
+    @Override
+    public void openSettings(){
+        FragmentTransaction transaction = panel.requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.myFragmentContainer, new LineGraphSettings(this,panel));
+        transaction.commit();
+    }
 
     public void setMaxEntrys(int maxEntrys){
         this.maxEntrys = maxEntrys;

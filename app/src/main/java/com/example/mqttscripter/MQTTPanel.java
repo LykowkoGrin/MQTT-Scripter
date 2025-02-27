@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -134,11 +135,35 @@ public class MQTTPanel extends Fragment {
 
         widgetsLayout = view.findViewById(R.id.widgets_layout);
 
+
         for(IWidget widget : widgets){
-            if (widget.getView().getParent() != null)
+            if (widget.getView().getParent() != null) {
                 ((ViewGroup) widget.getView().getParent()).removeView(widget.getView());
+            }
+
+            if (widget.getView().getId() == View.NO_ID) {
+                widget.getView().setId(View.generateViewId());
+            }
 
             widgetsLayout.addView(widget.getView());
+
+            ImageButton moreSettingsButton = new ImageButton(context);
+            RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+            );
+            buttonParams.addRule(RelativeLayout.ALIGN_LEFT, widget.getView().getId());
+            buttonParams.topMargin = 0;
+
+            moreSettingsButton.setLayoutParams(buttonParams);
+            moreSettingsButton.setImageResource(R.drawable.baseline_more_horiz_25);
+            moreSettingsButton.setBackground(null);
+
+            moreSettingsButton.setOnClickListener((View v)->{
+                widget.openSettings();
+            });
+
+            widgetsLayout.addView(moreSettingsButton);
         }
 
         return view;

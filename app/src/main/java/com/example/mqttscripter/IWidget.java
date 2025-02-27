@@ -15,6 +15,8 @@ public interface IWidget {
 
     public int getQoS();
     public void messageArrived(String topic, MqttMessage message);
+    public void openSettings();
+
 
     public View getView();
 }
