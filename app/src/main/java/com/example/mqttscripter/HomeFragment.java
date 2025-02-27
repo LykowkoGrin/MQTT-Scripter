@@ -20,13 +20,10 @@ public class HomeFragment extends Fragment {
 
     LinearLayout items;
     LayoutInflater inflater;
-    Context context;
     private Set<MQTTPanel> panels = new HashSet<>();
 
-    public HomeFragment(Context context){
+    public HomeFragment(){
         super(R.layout.all_panels);
-
-        this.context = context;
     }
 
     @Override
@@ -64,7 +61,7 @@ public class HomeFragment extends Fragment {
         addButton.setOnClickListener((View v) ->{
 
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(context, new MQTTPanel(context, this), this));
+            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(new MQTTPanel(this),this));
             transaction.commit();
         });
 

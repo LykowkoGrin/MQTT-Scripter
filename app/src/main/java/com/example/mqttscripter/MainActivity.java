@@ -28,7 +28,15 @@ public class MainActivity extends AppCompatActivity {
             startService(serviceIntent);
         }
 
-        loadFragment(new HomeFragment(this));
+        HomeFragment homeFragment = BackgroundService.home;
+
+        if(homeFragment == null){
+            homeFragment = new HomeFragment();
+            BackgroundService.home = homeFragment;
+        }
+
+
+        loadFragment(homeFragment);
 
     }
 

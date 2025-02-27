@@ -15,6 +15,8 @@ public class BackgroundService extends Service {
     private static Context mContext;
     private static final String CHANNEL_ID = "background_service_channel";
 
+    public static HomeFragment home = null;
+
     // Статический метод для получения контекста сервиса
     public static Context getContext() {
         return mContext;

@@ -36,7 +36,7 @@ public class MQTTPanel extends Fragment {
     private MQTTConsole mqttConsole;
     private ImageButton statusButton;
 
-    private Context context;
+    //private Context context;
 
     private LinearLayout widgetsLayout;
 
@@ -44,9 +44,9 @@ public class MQTTPanel extends Fragment {
     private Map<String,IWidget> topics = new HashMap<>();
     private HomeFragment home;
 
-    public MQTTPanel(Context context, HomeFragment home){
+    public MQTTPanel(HomeFragment home){
         super(R.layout.panel);
-        this.context = context;
+        //this.context = context;
         this.home = home;
 
         mqtt = new MQTTManager(BackgroundService.getContext());
@@ -117,13 +117,13 @@ public class MQTTPanel extends Fragment {
             //MQTTPanelSettings.setPanel(this);
 
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(context,this, home));
+            transaction.replace(R.id.myFragmentContainer, new MQTTPanelSettings(this, home));
             transaction.commit();
         });
 
         addWidgetButton.setOnClickListener((View v)->{
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.myFragmentContainer, new WidgetAdder(context,this));
+            transaction.replace(R.id.myFragmentContainer, new WidgetAdder(this));
             transaction.commit();
         });
 
@@ -147,7 +147,7 @@ public class MQTTPanel extends Fragment {
 
             widgetsLayout.addView(widget.getView());
 
-            ImageButton moreSettingsButton = new ImageButton(context);
+            ImageButton moreSettingsButton = new ImageButton(getActivity());
             RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT
@@ -214,7 +214,7 @@ public class MQTTPanel extends Fragment {
         widgetsLayout = null;
         mqtt = null;
         statusButton = null;
-        context = null;
+        //context = null;
         mqttConsole = null;
     }
 
@@ -267,7 +267,7 @@ public class MQTTPanel extends Fragment {
     private IWidget getWidgetByName(String name){
         switch (name){
             case "line_graph":
-                return new LineGraph(context, this);
+                return new LineGraph(getActivity(), this);
 
         }
         return null;

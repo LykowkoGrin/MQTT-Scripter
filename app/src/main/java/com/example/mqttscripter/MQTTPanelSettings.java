@@ -28,15 +28,15 @@ public class MQTTPanelSettings extends Fragment {
     int port = 2000;
 
     boolean isNewPanel = false;
-    Context context;
+    //Context context;
     HomeFragment home;
 
 
-    public MQTTPanelSettings(Context context, MQTTPanel panel, HomeFragment home){
+    public MQTTPanelSettings(MQTTPanel panel, HomeFragment home){
         super(R.layout.panel_settings);
 
         this.panel = panel;
-        this.context = context;
+        //this.context = context;
         this.home = home;
     }
 

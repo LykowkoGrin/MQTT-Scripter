@@ -18,12 +18,12 @@ import com.example.mqttscripter.widgets.LineGraph;
 public class WidgetAdder extends Fragment {
 
     MQTTPanel panel;
-    Context context;
+    //Context context;
 
-    public WidgetAdder(Context context, MQTTPanel panel){
+    public WidgetAdder(MQTTPanel panel){
         super(R.layout.create_widget);
 
-        this.context = context;
+        //this.context = context;
         this.panel = panel;
     }
 
@@ -49,7 +49,7 @@ public class WidgetAdder extends Fragment {
         text1.setText("График");
 
         panel1.setOnClickListener((View v)->{
-            panel.addWidget(new LineGraph(context,panel));
+            panel.addWidget(new LineGraph(getActivity(),panel));
             goBack();
         });
     }
