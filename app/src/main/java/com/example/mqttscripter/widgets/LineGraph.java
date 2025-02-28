@@ -81,34 +81,39 @@ public class LineGraph implements IWidget {
         lineChart.invalidate();
     }
 
-    private void addEntry(float x, float y) {
-        // Получаем данные графика
-        LineData data = lineChart.getData();
-        if (data != null) {
-            // Пытаемся получить первый набор данных
-            ILineDataSet set = data.getDataSetByIndex(0);
-            if (set == null) {
-                // Если набора данных ещё нет, создаём новый
-                set = createSet();
-                data.addDataSet(set);
-            }
-            // Добавляем новую точку в набор данных
-            data.addEntry(new Entry(x, y), 0);
+    private void addEntry(final float x, final float y) {
+        // Обеспечиваем выполнение обновления на UI-потоке
+        lineChart.post(new Runnable() {
+            @Override
+            public void run() {
+                LineData data = lineChart.getData();
+                if (data != null) {
+                    // Получаем или создаём набор данных
+                    ILineDataSet set = data.getDataSetByIndex(0);
+                    if (set == null) {
+                        set = createSet();
+                        data.addDataSet(set);
+                    }
+                    // Добавляем новую точку
+                    data.addEntry(new Entry(x, y), 0);
 
-            // Ограничиваем количество точек, используя maxEntrys
-            if (set.getEntryCount() > maxEntrys) {
-                // Получаем первую (самую старую) точку
-                Entry removedEntry = set.getEntryForIndex(0);
-                // Удаляем её из набора данных
-                data.removeEntry(removedEntry, 0);
-            }
+                    // Если количество точек превышает maxEntrys, удаляем самую старую
+                    if (set.getEntryCount() > maxEntrys) {
+                        data.removeEntry(0, 0);
+                    }
 
-            // Уведомляем данные о том, что они изменились
-            data.notifyDataChanged();
-            // Обновляем график
-            lineChart.notifyDataSetChanged();
-            lineChart.invalidate();
-        }
+                    // Уведомляем график об изменении данных
+                    data.notifyDataChanged();
+                    lineChart.notifyDataSetChanged();
+
+                    // Ограничиваем видимую область графика
+                    lineChart.setVisibleXRangeMaximum(maxEntrys);
+                    // Перемещаем видимую область к последней точке
+                    lineChart.moveViewToX(data.getEntryCount());
+                    lineChart.invalidate();
+                }
+            }
+        });
     }
 
     private LineDataSet createSet() {
